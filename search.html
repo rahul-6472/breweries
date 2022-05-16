@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <style>
+      body {
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      #navbar {
+        background: teal;
+        height: 70px;
+        width: 100%;
+      }
+      #navbar a {
+        text-decoration: none;
+        color: #fff;
+        font-size: 16px;
+        margin-right: 20px;
+        text-align: center;
+      }
+      input {
+        margin: 40px;
+      }
+
+      table,
+      td,
+      th {
+        border: 1px solid #212121;
+      }
+      td {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="navbar">
+      <a href="homePage.html">Home</a>
+      <a href="search.html">Search</a>
+    </div>
+
+    <input type="text" id="query" oninput="debounce (main, 1000)" />
+
+    <table>
+      <thead>
+        <th>name</th>
+        <th>brewery_type</th>
+        <th>city</th>
+        <th>state</th>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </body>
+  <script>
+    const main = async () => {
+      try {
+        let breweryData = await searchBrewery();
+        console.log(breweryData);
+
+        appendData(breweryData);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const searchBrewery = async () => {
+      let breweryName = document.getElementById("query").value;
+      try {
+        let res = await fetch(
+          `https://api.openbrewerydb.org/breweries?by_name=${breweryName}`
+        );
+        let data = await res.json();
+        return data;
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    let timerId;
+    const debounce = (func, delay) => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+      timerId = setTimeout(() => {
+        func();
+      }, delay);
+    };
+
+    const appendData = (breweryData) => {
+      document.getElementById("tbody").innerHTML = "";
+      breweryData.forEach((brewery) => {
+        let row = document.createElement("tr");
+
+        let name = document.createElement("td");
+        name.innerText = brewery.name;
+
+        let brewery_type = document.createElement("td");
+        brewery_type.innerText = brewery.brewery_type;
+
+        let city = document.createElement("td");
+        city.innerText = brewery.city;
+
+        let state = document.createElement("td");
+        state.innerText = brewery.state;
+
+        let button = document.createElement("button");
+        button.innerText = "MORE DETAILS";
+
+        button.addEventListener("click", () => {
+          let breweryId = brewery.id;
+          localStorage.setItem("breweryId", breweryId);
+          location.href = "breweryPage.html";
+        });
+
+        row.append(name, brewery_type, city, state, button);
+        document.getElementById("tbody").append(row);
+      });
+    };
+  </script>
+</html>

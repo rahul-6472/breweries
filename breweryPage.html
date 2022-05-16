@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>brewery  Page</title>
+    <style>
+        body{
+            margin:auto;
+        }
+        #navbar{
+            background:teal;
+            height:70px;
+            width:100%;
+        }
+        #navbar a{
+            text-decoration:none;
+            color:#fff;
+            font-size:16px;
+            margin-right:20px;
+            text-align:center;
+        }
+        #container {
+            display:flex;
+            flex-direction:column;
+            justify-content: center;
+            align-items:center;
+        }
+        #container > div {
+            border:1px solid #cecece;
+            margin-top:100px;
+            width:350px;
+            text-align:center;
+            color:#fff;
+            background:teal;
+
+        }
+        h1{
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div id = "navbar">
+        <a href= "homePage.html">Home</a>
+        <a href = "search.html">Search</a>
+    </div>
+
+    <h1>Brewery</h1>
+    <div id = "container" ></div>
+</body>
+<script>
+  let breweryId = localStorage.getItem("breweryId")
+  console.log(breweryId )
+  const getData = async () =>{
+      try{
+          let res = await fetch (`https://api.openbrewerydb.org/breweries/${breweryId}`)
+          let data = await res.json()
+
+          console.log(data)
+          displayData(data)
+      }
+      catch (err){
+          console.log(err)
+      }
+  }
+  getData ()
+
+
+  document.getElementById("container").innerHTML = ""
+  const displayData = (data)=>{
+
+    let brewCard = document.createElement("div")
+
+    let name = document.createElement("p")
+    name.textContent = data.name
+
+    let breweryType = document.createElement("p")
+    breweryType .textContent = data.brewery_type
+
+    let city = document.createElement("p")
+    city.textContent = data.city 
+
+    let state = document.createElement("p")
+    state.textContent = data.state
+
+    let country = document.createElement("p")
+    country.textContent = data.country
+
+
+    let phone = document.createElement("p")
+    phone.textContent = data.phone
+
+
+    let postalCode = document.createElement("p")
+    postalCode.textContent = data.postal_code
+
+    brewCard.append(name,breweryType,city,state,country,phone,postalCode)
+
+    document.getElementById("container").append(brewCard)
+
+  }
+</script>
+</html>
